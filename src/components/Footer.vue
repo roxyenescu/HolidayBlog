@@ -8,21 +8,22 @@
                         <li>
                             <a href="#">
                                 <youTube class="svg-icon" />
+                                <img :src="youTube" alt="youTube" class="svg-icon" />
                             </a>
                         </li>
                         <li>
                             <a href="#">
-                                <twitter class="svg-icon" />
+                                <img :src="twitter" alt="twitter" class="svg-icon" />
                             </a>
                         </li>
                         <li>
                             <a href="#">
-                                <instagram class="svg-icon" />
+                                <img :src="instagram" alt="instagram" class="svg-icon" />
                             </a>
                         </li>
                         <li>
                             <a href="#">
-                                <linkedin class="svg-icon" />
+                                <img :src="linkedin" alt="linkedin" class="svg-icon" />
                             </a>
                         </li>
                     </ul>
@@ -30,10 +31,10 @@
 
                 <div class="col-2">
                     <ul>
-                        <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
-                        <router-link class="link">Blogs</router-link>
-                        <router-link v-if="user" class="link">Create Post</router-link>
-                        <router-link v-if="!user" class="link">Log In / Register</router-link>
+                        <router-link class="link" to="#">Home</router-link>
+                        <router-link class="link" to="#">Blogs</router-link>
+                        <router-link v-if="user" class="link" to="#">Create Post</router-link>
+                        <router-link v-if="!user" class="link" to="#">Log In / Register</router-link>
                     </ul>
                 </div>
             </div>
@@ -100,10 +101,14 @@ footer {
             }
 
             .header {
+                text-align: center;
                 font-size: 24px;
                 color: #fff;
                 text-decoration: none;
                 font-weight: 600;
+                @media (min-width: 800px) {
+                    text-align: initial;
+                }
             }
 
             ul {
@@ -144,7 +149,6 @@ footer {
                         .svg-icon {
                             width: 24px;
                             height: auto;
-                            color: #fff;
                         }
                     }
                 }
