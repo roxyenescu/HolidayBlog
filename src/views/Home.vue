@@ -10,17 +10,30 @@
         </div>
       </div>
     </div>
+    <div class="updates">
+      <div class="container">
+        <h2>Never miss a post. Register for your free account today!</h2>
+        <router-link class="router-button" to="#">
+          Registre for HolidayBlogs
+          <img :src="Arrow" class="arrow arrow-light" />
+        </router-link>
+      </div>
+    </div>
   </div>
 </template>
   
 <script>
 import BlogPost from '../components/BlogPost.vue';
 import BlogCards from '../components/BlogCard.vue';
+import Arrow from "../assets/Icons/arrow-right-light.svg"
+
 export default {
   name: "Home",
   components: { BlogPost, BlogCards },
   data() {
     return {
+      Arrow: Arrow,
+
       welcomeScreen: {
         title: "Discover Magical Destinations!",
         blogPost:
@@ -41,10 +54,10 @@ export default {
         },
       ],
       sampleBlogCards: [
-        { blogTitle: "Blog Card #1", blogCoverPhoto: "stock-1", blogDate: "Ian 1, 2024" },
-        { blogTitle: "Blog Card #2", blogCoverPhoto: "stock-2", blogDate: "Ian 1, 2024" },
-        { blogTitle: "Blog Card #3", blogCoverPhoto: "stock-3", blogDate: "Ian 1, 2024" },
-        { blogTitle: "Blog Card #4", blogCoverPhoto: "stock-4", blogDate: "Ian 1, 2024" }
+        { blogTitle: "Venice Holiday", blogCoverPhoto: "venice-holiday", blogDate: "Sep 25, 2023" },
+        { blogTitle: "London Holiday", blogCoverPhoto: "london-holiday", blogDate: "Nov 6, 2023" },
+        { blogTitle: "Dubai Holiday", blogCoverPhoto: "dubai-holiday", blogDate: "Dec 24, 2023" },
+        { blogTitle: "Norway Holiday", blogCoverPhoto: "norway-holiday", blogDate: "Ian 4, 2024" }
       ],
     }
   }
@@ -52,7 +65,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .blog-card-wrap {
   h3 {
     font-weight: 300;
@@ -61,4 +73,41 @@ export default {
   }
 }
 
+.updates {
+  .container {
+    padding: 100px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    @media(min-width: 800px) {
+      padding: 125px 25px;
+      flex-direction: row;
+    }
+
+    .router-button {
+      display: flex;
+      font-size: 14px;
+      text-decoration: none;
+
+      @media(min-width: 800px) {
+        margin-left: auto;
+      }
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 32px;
+      max-width: 425px;
+      width: 100%;
+      text-align: center;
+      text-transform: uppercase;
+
+      @media(min-width: 800px) {
+        text-align: initial;
+        font-size: 40px;
+      }
+    }
+  }
+}
 </style>
