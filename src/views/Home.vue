@@ -13,22 +13,22 @@ export default {
   data() {
     return {
       welcomeScreen: {
-        title: "Welcome!",
+        title: "Discover Magical Destinations!",
         blogPost:
-          "Weekly blog articles with all things programming including HTML, CSS, JavaScript and more. Register today to never miss a post!",
+          "Welcome to our vacation blog, where the adventure begins! Explore our weekly articles on exotic destinations, travel tips, and captivating stories. Register now to stay connected to the latest vacation experiences!",
         welcomeScreen: true,
-        photo: "coding",
+        photo: "photo-holiday-1",
       },
       sampleBlogPost: [
         {
-          title: "This is a Filler Title!",
-          blogPostHTML: "This is a filler blog post title!",
-          blogCoverPhoto: "beautiful-stories",
+          title: "Unbounded Exploration!",
+          blogPostHTML: "Be inspired by boundless travels and unexpected adventures!",
+          blogCoverPhoto: "photo-holiday-2",
         },
         {
-          title: "This is a Filler Title2!",
-          blogPostHTML: "This is a filler blog post title!",
-          blogCoverPhoto: "designed-for-everyone",
+          title: "The Odyssey of Our Vacations!",
+          blogPostHTML: "See the world with us and create your own memories. ",
+          blogCoverPhoto: "photo-holiday-3",
         },
       ],
     }
