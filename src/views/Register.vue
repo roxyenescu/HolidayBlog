@@ -42,26 +42,23 @@
 </template>
 
 <script>
-import { ref } from 'vue';
 import emailIcon from "../assets/Icons/envelope-regular.svg";
 import passwordIcon from "../assets/Icons/lock-alt-solid.svg";
 import userIcon from "../assets/Icons/user-alt-light.svg";
 
 export default {
     name: "Register",
-    setup() {
-        const firstName = ref(null);
-        const lastName = ref(null);
-        const username = ref(null);
-        const email = ref(null);
-        const password = ref(null);
-
+    data() {
         return {
-            firstName,
-            lastName,
-            username,
-            email,
-            password,
+            firstName: null,
+            lastName: null,
+            username: null,
+            email: null,
+            password: null
+        }
+    },
+    setup() {
+        return {
             emailIcon,
             passwordIcon,
             userIcon

@@ -29,18 +29,19 @@
 </template>
 
 <script>
-import { ref } from 'vue';
 import emailIcon from "../assets/Icons/envelope-regular.svg";
 import passwordIcon from "../assets/Icons/lock-alt-solid.svg";
+
 export default {
     name: "Login",
-    setup() {
-        const email = ref(null);
-        const password = ref(null);
-
+    data() {
         return {
-            email,
-            password,
+            email: null,
+            password: null
+        }
+    },
+    setup() {
+        return {
             emailIcon,
             passwordIcon
         }

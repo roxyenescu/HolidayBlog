@@ -1,5 +1,7 @@
 <template>
     <div class="reset-password">
+        <Modal v-if="modalActive" v-on:close-modal="closeModal" />
+        <Loading v-if="loading" />
         <div class="form-wrap">
             <form class="reset">
                 <h2>Reset Password</h2>
@@ -26,21 +28,36 @@
 </template>
 
 <script>
-import { ref } from 'vue';
 import emailIcon from "../assets/Icons/envelope-regular.svg";
+import Modal from "../components/Modal.vue";
+import Loading from "../components/Loading.vue";
 
 export default {
     name: "ForgotPassword",
-    setup() {
-        const email = ref(null);
-
+    data() {
         return {
-            email,
+            email: null,
+            modalActive: false,
+            modalMessage: "",
+            loading: null,
+        }
+    },
+    components: {
+        Modal,
+        Loading,
+    },
+    setup() {
+        return {
             emailIcon
         }
-    }
-
-}
+    },
+    methods: {
+        closeModal() {
+            this.modalActive = !this.modalActive;
+            this.email = "";
+        },
+    },
+};
 </script>
 
 <style lang="scss" scoped>
