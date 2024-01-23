@@ -1,9 +1,9 @@
 <template>
   <div class="app-wrapper">
     <div class="app">
-      <Navigation />
+      <Navigation v-if="!navigation" />
       <router-view />
-      <Footer />
+      <Footer v-if="!navigation" />
     </div>
   </div>
 </template>
@@ -17,6 +17,29 @@ export default {
   components: {
     Navigation,
     Footer
+  },
+  data() {
+    return {
+      navigation: null,
+    };
+  },
+  created() {
+    this.checkRoute();
+   },
+  mounted() { },
+  methods: {
+    checkRoute() {
+      if (this.$route.name === "Login" || this.$route.name === "Register" || this.$route.name === "ForgotPassword") {
+        this.navigation = true;
+        return;
+      }
+      this.navigation = false;
+    }
+  },
+  watch: {
+    $route() {
+      this.checkRoute();
+    }
   },
 };
 </script>
@@ -56,6 +79,7 @@ export default {
 .arrow {
   margin-left: 8px;
   width: 12px;
+
   path {
     fill: #000;
   }
@@ -96,6 +120,7 @@ button,
   font-size: 15px;
   font-weight: 500;
   background-color: transparent;
+
   @media(min-width: 700px) {
     margin-top: 0;
     margin-left: auto;
@@ -122,6 +147,7 @@ button,
   position: relative;
   padding: 80px 16px;
   background-color: #f1f1f1;
+
   @media(min-width: 500px) {
     padding: 100px 16px;
   }
@@ -144,6 +170,5 @@ button,
     }
   }
 }
-
 </style>
 

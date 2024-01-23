@@ -49,7 +49,7 @@ export default {
             margin-right: 16px;
         }
 
-        input[type="chechbox"] {
+        input[type="checkbox"] {
             position: relative;
             border: none;
             -webkit-appearance: none;
@@ -61,7 +61,7 @@ export default {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        input[type="chechbox"]:before {
+        input[type="checkbox"]::before {
             content: "";
             position: absolute;
             width: 30px;
@@ -75,7 +75,7 @@ export default {
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        input:checked[type="chechbox"]:before {
+        input[type="checkbox"]:checked:before {
             background: #fff;
             left: 52px;
         }
