@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import { getAuth } from 'firebase/auth';
+
 import Navigation from './components/Navigation.vue';
 import Footer from './components/Footer.vue';
 
@@ -25,7 +27,9 @@ export default {
   },
   created() {
     this.checkRoute();
-   },
+    this.showCurrentUser();
+
+  },
   mounted() { },
   methods: {
     checkRoute() {
@@ -34,6 +38,16 @@ export default {
         return;
       }
       this.navigation = false;
+    },
+
+    showCurrentUser() {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user) {
+        console.log(user);
+      } else {
+        console.log('NICIUN UTILIZATOR CONECTAT!');
+      }
     }
   },
   watch: {

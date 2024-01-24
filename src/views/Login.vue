@@ -16,11 +16,13 @@
                     <input type="password" placeholder="Password" v-model="password" />
                     <img :src="passwordIcon" class="icon" />
                 </div>
+                <div v-show="error" class="error">{{ this.errorMsg }}</div>
+
             </div>
 
             <router-link class="forgot-password" :to="{ name: 'ForgotPassword' }">Forgot your password</router-link>
 
-            <button>Sign In</button>
+            <button @click.prevent="signIn">Sign In</button>
 
             <div class="angle"></div>
         </form>
@@ -29,6 +31,7 @@
 </template>
 
 <script>
+import { signInWithEmailAndPassword, getAuth } from 'firebase/auth';
 import emailIcon from "../assets/Icons/envelope-regular.svg";
 import passwordIcon from "../assets/Icons/lock-alt-solid.svg";
 
@@ -36,8 +39,10 @@ export default {
     name: "Login",
     data() {
         return {
-            email: null,
-            password: null
+            email: "",
+            password: "",
+            error: null,
+            errorMsg: "",
         }
     },
     setup() {
@@ -45,12 +50,37 @@ export default {
             emailIcon,
             passwordIcon
         }
+    },
+    methods: {
+        async signIn() {
+            if (this.email !== "" && this.password !== "") {
+                this.error = false;
+                this.errorMsg = "";
+                const auth = getAuth();
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
+                    console.log(userCredential.user.uid);
+                    this.$router.push({ name: "Home" });
+                } catch (err) {
+                    this.error = true;
+                    if (err.code === 'auth/invalid-email') {
+                        this.errorMsg = "Enter a valid email address!";
+                    } else if (err.code === 'auth/invalid-credential') {
+                        this.errorMsg = "The password is wrong!";
+                    } else {
+                        this.errorMsg = err.message;
+                    }
+                }
+            } else {
+                this.error = true;
+                this.errorMsg = "Please enter both email and password";
+            }
+        }
     }
 }
 </script>
 
 <style lang="scss">
-
 .form-wrap {
     overflow: hidden;
     display: flex;
@@ -59,6 +89,7 @@ export default {
     align-self: center;
     margin: 0 auto;
     width: 90%;
+
     @media (min-width: 900px) {
         width: 100%;
     }
@@ -79,6 +110,7 @@ export default {
         justify-content: center;
         align-items: center;
         flex: 1;
+
         @media (min-width: 900px) {
             padding: 0 50px;
         }
@@ -88,6 +120,7 @@ export default {
             font-size: 32px;
             color: #303030;
             margin-bottom: 40px;
+
             @media (min-width: 900px) {
                 font-size: 40px;
             }
@@ -103,6 +136,7 @@ export default {
                 justify-content: center;
                 align-items: center;
                 margin-bottom: 8px;
+
                 input {
                     width: 100%;
                     border: none;
@@ -145,6 +179,7 @@ export default {
             width: 60px;
             right: -30px;
             height: 101%;
+
             @media (min-width: 900px) {
                 display: initial;
             }
@@ -158,10 +193,10 @@ export default {
         background-image: url("../assets/background1.jpg");
         width: 100%;
         height: 100%;
+
         @media (min-width: 900px) {
             display: initial;
         }
     }
 }
-
 </style>

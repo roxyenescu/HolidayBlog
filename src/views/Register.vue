@@ -60,7 +60,7 @@ export default {
             username: "",
             email: "",
             password: "",
-            error: false,
+            error: null,
             errorMsg: "",
         }
     },

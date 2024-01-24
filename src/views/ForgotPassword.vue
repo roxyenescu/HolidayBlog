@@ -1,15 +1,21 @@
 <template>
     <div class="reset-password">
-        <Modal v-if="modalActive" v-on:close-modal="closeModal" />
+        <Modal v-if="modalActive" :modalMessage="modalMessage" v-on:close-modal="closeModal" />
         <Loading v-if="loading" />
         <div class="form-wrap">
             <form class="reset">
+
+                <p class="login-register">
+                    Back to
+                    <router-link class="router-link" :to="{ name: 'Login' }">Login</router-link>
+                </p>
+
                 <h2>Reset Password</h2>
 
                 <p class="login-register">
                     Forgot your password? Enter your email to reset it!
                 </p>
-                
+
                 <div class="inputs">
                     <div class="input">
                         <input type="text" placeholder="Email" v-model="email" />
@@ -17,7 +23,7 @@
                     </div>
                 </div>
 
-                <button>Reset</button>
+                <button @click.prevent="resetPassword">Reset</button>
 
                 <div class="angle"></div>
             </form>
@@ -28,6 +34,7 @@
 </template>
 
 <script>
+import { sendPasswordResetEmail, getAuth } from 'firebase/auth';
 import emailIcon from "../assets/Icons/envelope-regular.svg";
 import Modal from "../components/Modal.vue";
 import Loading from "../components/Loading.vue";
@@ -36,10 +43,10 @@ export default {
     name: "ForgotPassword",
     data() {
         return {
-            email: null,
+            email: "",
             modalActive: false,
             modalMessage: "",
-            loading: null,
+            loading: false,
         }
     },
     components: {
@@ -52,6 +59,29 @@ export default {
         }
     },
     methods: {
+        resetPassword() {
+            if (!this.email) {
+                this.modalMessage = "Please enter your email";
+                this.modalActive = true;
+                return;
+            }
+
+            this.loading = true;
+            const auth = getAuth();
+            sendPasswordResetEmail(auth, this.email).then(() => {
+                this.modalMessage = "If your account exists, you will receive an email!";
+                this.loading = false;
+                this.modalActive = true;
+            }).catch(err => {
+                if (err.code === 'auth/invalid-email') {
+                    this.modalMessage = "The email address is badly formatted!";
+                } else {
+                    this.modalMessage = err.message;
+                }
+                this.loading = false;
+                this.modalActive = true;
+            });
+        },
         closeModal() {
             this.modalActive = !this.modalActive;
             this.email = "";
@@ -61,9 +91,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .reset-password {
     position: relative;
+
     .form-wrap {
         .reset {
             h2 {
@@ -77,5 +107,4 @@ export default {
         }
     }
 }
-
 </style>
