@@ -7,7 +7,6 @@
                     <ul>
                         <li>
                             <a href="#">
-                                <youTube class="svg-icon" />
                                 <img :src="youTube" alt="youTube" class="svg-icon" />
                             </a>
                         </li>
@@ -31,10 +30,10 @@
 
                 <div class="col-2">
                     <ul>
-                        <router-link class="link" to="#">Home</router-link>
-                        <router-link class="link" to="#">Blogs</router-link>
-                        <router-link v-if="user" class="link" to="#">Create Post</router-link>
-                        <router-link v-if="!user" class="link" to="#">Log In / Register</router-link>
+                        <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
+                        <router-link class="link" :to="{ name: 'Blogs' }">Blogs</router-link>
+                        <router-link class="link" to="#">Create Post</router-link>
+                        <router-link class="link" :to="{ name: 'Login' }">Log In / Register</router-link>
                     </ul>
                 </div>
             </div>

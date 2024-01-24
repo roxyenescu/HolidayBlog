@@ -1,5 +1,5 @@
-import firebase from 'firebase/app'
-import 'firebase/firestore'
+import { initializeApp } from 'firebase/app';
+import { getFirestore, serverTimestamp } from 'firebase/firestore';
 
 // My web app's Firebase configuration
 const firebaseConfig = {
@@ -11,8 +11,11 @@ const firebaseConfig = {
     appId: "1:551472165024:web:43c74a5b7055f6abc699c5"
   };
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-const timestamp = firebase.firestore.FieldValue.serverTimestamp;
+// Inițializarea aplicației Firebase
+const app = initializeApp(firebaseConfig);
 
-export { timestamp };
-export default firebaseApp.firestore();
+// Inițializarea serviciului Firestore
+const db = getFirestore(app);
+
+export { serverTimestamp };
+export default db;
