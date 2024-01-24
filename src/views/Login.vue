@@ -61,6 +61,9 @@ export default {
                     const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password);
                     console.log(userCredential.user.uid);
                     this.$router.push({ name: "Home" });
+
+                    const loginTime = new Date().getTime();
+                    localStorage.setItem('loginTime', loginTime);
                 } catch (err) {
                     this.error = true;
                     if (err.code === 'auth/invalid-email') {
@@ -75,7 +78,7 @@ export default {
                 this.error = true;
                 this.errorMsg = "Please enter both email and password";
             }
-        }
+        },
     }
 }
 </script>

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 
 import Navigation from './components/Navigation.vue';
 import Footer from './components/Footer.vue';
@@ -26,11 +26,27 @@ export default {
     };
   },
   created() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      this.$store.commit("updateUser", user);
+      if (user) {
+        this.$store.dispatch("getCurrentUser");
+        console.log(this.$store.state.profileEmail);
+        console.log('Utilizator AUTENTIFICAT');
+      } else {
+        console.log('Utilizator NEAUTENTIFICAT');
+      }
+    });
+
     this.checkRoute();
-    this.showCurrentUser();
 
   },
-  mounted() { },
+  mounted() {
+    this.checkAuthTimeout();
+  },
+  unmounted() {
+    clearInterval(this.checkInterval);
+  },
   methods: {
     checkRoute() {
       if (this.$route.name === "Login" || this.$route.name === "Register" || this.$route.name === "ForgotPassword") {
@@ -40,14 +56,20 @@ export default {
       this.navigation = false;
     },
 
-    showCurrentUser() {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (user) {
-        console.log(user);
-      } else {
-        console.log('NICIUN UTILIZATOR CONECTAT!');
-      }
+    checkAuthTimeout() {
+      const checkInterval = setInterval(() => {
+        const loginTime = localStorage.getItem('loginTime');
+        const currentTime = new Date().getTime();
+
+        if (currentTime - loginTime > 604800000) { // 604800000 ms = 7 zile
+          const auth = getAuth();
+          signOut(auth).then(() => {
+            localStorage.removeItem('loginTime');
+            clearInterval(checkInterval);
+            this.$router.push({ name: 'Login' });
+          });
+        }
+      }, 1000); // Verific la fiecare secundă
     }
   },
   watch: {
