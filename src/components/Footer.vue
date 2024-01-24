@@ -33,7 +33,7 @@
                         <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
                         <router-link class="link" :to="{ name: 'Blogs' }">Blogs</router-link>
                         <router-link class="link" to="#">Create Post</router-link>
-                        <router-link class="link" :to="{ name: 'Login' }">Log In / Register</router-link>
+                        <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Log In / Register</router-link>
                     </ul>
                 </div>
             </div>
@@ -60,6 +60,11 @@ export default {
             instagram: instagram,
             linkedin: linkedin
         };
+    },
+    computed: {
+        user() {
+            return this.$store.state.user;
+        },
     },
 }
 
@@ -148,6 +153,7 @@ footer {
                         .svg-icon {
                             width: 24px;
                             height: auto;
+                            filter: brightness(0) invert(1);
                         }
                     }
                 }
