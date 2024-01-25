@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
 import { getAuth } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
 import db from '../firebase/firebaseInit';
 
 export default createStore({
@@ -41,7 +41,16 @@ export default createStore({
       state.profileInitials =
         state.profileFirstName.match(/(\b\S)?/g).join("") +
         state.profileLastName.match(/(\b\S)?/g).join("");
-    }
+    },
+    changeFirstName(state, payload) {
+      state.profileFirstName = payload;
+    },
+    changeLastName(state, payload) {
+      state.profileLastName = payload;
+    },
+    changeUsername(state, payload) {
+      state.profileUsername = payload;
+    },
   },
   actions: {
     async getCurrentUser({ commit }) {
@@ -60,7 +69,22 @@ export default createStore({
       } else {
         console.log("No user!");
       }
-    }
+    },
+    async updateUserSettings({ commit, state }) {
+      const db = getFirestore(); // Obțin instanța Firestore
+      const userRef = doc(db, 'users', state.profileId); // Referință către documentul utilizatorului
+      
+      try {
+        await updateDoc(userRef, {
+          firstName: state.profileFirstName,
+          lastName: state.profileLastName,
+          username: state.profileUsername,
+        });
+        commit("setProfileInitials");
+      } catch (error) {
+        console.error("Eroare la actualizarea setărilor utilizatorului:", error);
+      }
+    },
   },
   modules: {
   }

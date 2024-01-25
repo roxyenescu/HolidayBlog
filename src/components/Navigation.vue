@@ -26,13 +26,13 @@
 
                         <div class="options">
                             <div class="option">
-                                <router-link class="option" to="#">
+                                <router-link class="option" :to="{ name: 'Profile' }">
                                     <img :src="userIcon" class="icon" />
                                     <p>Profile</p>
                                 </router-link>
                             </div>
                             <div class="option">
-                                <router-link class="option" to="#">
+                                <router-link class="option" :to="{ name: 'Admin' }">
                                     <img :src="adminIcon" class="icon" />
                                     <p>Admin</p>
                                 </router-link>
