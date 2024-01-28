@@ -27,10 +27,10 @@ export default {
   },
   created() {
     const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       this.$store.commit("updateUser", user);
       if (user) {
-        this.$store.dispatch("getCurrentUser");
+        this.$store.dispatch("getCurrentUser", user);
         console.log(this.$store.state.profileEmail);
         console.log('Utilizator AUTENTIFICAT');
       } else {

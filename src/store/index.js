@@ -13,6 +13,7 @@ export default createStore({
     ],
     editPost: null,
     user: null,
+    profileAdmin: null, //nou
     profileEmail: null,
     profileFirstName: null,
     profileLastName: null,
@@ -29,6 +30,10 @@ export default createStore({
     },
     updateUser(state, payload) {
       state.user = payload;
+    },
+    setProfileAdmin(state, payload) {
+      state.profileAdmin = payload;
+      console.log(state.profileAdmin);
     },
     setProfileInfo(state, doc) {
       state.profileId = doc.id;
@@ -62,7 +67,11 @@ export default createStore({
         if (dbResults.exists()) {
           commit("setProfileInfo", dbResults);
           commit("setProfileInitials");
-          console.log(dbResults);
+          // console.log(dbResults);
+
+          const token = await user.getIdTokenResult();
+          const admin = await token.claims.admin;
+          commit('setProfileAdmin', admin);
         } else {
           console.log("No such document!");
         }
