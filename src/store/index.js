@@ -11,9 +11,14 @@ export default createStore({
       { blogTitle: "Dubai Holiday", blogCoverPhoto: "dubai-holiday", blogDate: "Dec 24, 2023" },
       { blogTitle: "Norway Holiday", blogCoverPhoto: "norway-holiday", blogDate: "Ian 4, 2024" }
     ],
+    blogHTML: "Write your blog title here...",
+    blogTitle: "",
+    blogPhotoName: "",
+    blogPhotoFileURL: null,
+    blogPhotoPreview: null,
     editPost: null,
     user: null,
-    profileAdmin: null, //nou
+    profileAdmin: null,
     profileEmail: null,
     profileFirstName: null,
     profileLastName: null,
@@ -21,9 +26,14 @@ export default createStore({
     profileId: null,
     profileInitials: null,
   },
-  getters: {
-  },
   mutations: {
+    newBlogPost(state, payload) {
+      state.blogHTML = payload;
+      console.log(state.blogHTML);
+    },
+    updateBlogTitle(state, payload) {
+      state.blogTitle = payload;
+    },
     toggleEditPost(state, payload) {
       state.editPost = payload;
       console.log(state.editPost);
@@ -67,11 +77,13 @@ export default createStore({
         if (dbResults.exists()) {
           commit("setProfileInfo", dbResults);
           commit("setProfileInitials");
-          // console.log(dbResults);
 
           const token = await user.getIdTokenResult();
           const admin = await token.claims.admin;
           commit('setProfileAdmin', admin);
+
+          console.log("Este admin: " + admin);
+          console.log("Token: " + token.claims.user_id);
         } else {
           console.log("No such document!");
         }
@@ -82,7 +94,7 @@ export default createStore({
     async updateUserSettings({ commit, state }) {
       const db = getFirestore(); // Obțin instanța Firestore
       const userRef = doc(db, 'users', state.profileId); // Referință către documentul utilizatorului
-      
+
       try {
         await updateDoc(userRef, {
           firstName: state.profileFirstName,
