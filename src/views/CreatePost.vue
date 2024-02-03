@@ -1,5 +1,6 @@
 <template>
   <div class="create-post">
+    <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview" />
     <div class="container">
       <div :class="{ invisible: !error }" class="err-message">
         <p><span>Error: </span>{{ this.errorMsg }}</p>
@@ -8,48 +9,94 @@
         <input type="text" placeholder="Enter Blog Title" v-model="blogTitle" />
         <div class="upload-file">
           <label for="blog-photo">Upload cover Photo</label>
-          <input type="file" ref="blogPhoto" id="blog-photo" accept=".png, .jpg, .jpeg" />
-          <button class="preview" :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL }">Preview
+          <input type="file" ref="blogPhoto" id="blog-photo" @change="fileChange" accept=".png, .jpg, .jpeg" />
+          <button @click="openPreview" class="preview"
+            :class="{ 'button-inactive': !this.$store.state.blogPhotoFileURL }">Preview
             Photo</button>
           <span>File Chosen: {{ this.$store.state.blogPhotoName }}</span>
         </div>
       </div>
       <div class="editor">
-        <QuillEditor toolbar="essential" v-model="blogHTML" :options="editorSettings" useCustomImageHandler />
+        <QuillEditor placeholder="Write your blog text here..." :editorOptions="editorSettings" toolbar="full"
+          useCustomImageHandler @image-added="imageHandler" type="text" v-model="blogHTML">
+          <input type="text" v-model="blogHTML" />
+        </QuillEditor>
       </div>
       <div class="blog-actions">
         <button>Publish Blog</button>
-        <router-link class="router-button" to="#">Post Preview</router-link>
+        <router-link class="router-button" :to="{ name: 'BlogPreview' }">Post Preview</router-link>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { QuillEditor } from '@vueup/vue-quill'
+import firebase from "firebase/app";
+import "firebase/storage";
+
+import BlogCoverPreview from '../components/BlogCoverPreview.vue';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import '@vueup/vue-quill/dist/vue-quill.bubble.css';
 
-import Quill from "quill";
-window.Quill = Quill
-const ImageResize = require("quill-image-resize-module").default;
-Quill.register("modules/imageResize", ImageResize);
+import { QuillEditor } from '@vueup/vue-quill';
+
+import Quill from 'quill'
+import { ImageDrop } from 'quill-image-drop-module'
+const ImageResize = require('quill-image-resize-module').default
+Quill.register('modules/imageDrop', ImageDrop)
+Quill.register('modules/imageResize', ImageResize)
 
 export default {
   name: "CreatePost",
   components: {
-    QuillEditor
+    QuillEditor,
+    BlogCoverPreview,
   },
   data() {
     return {
+      file: null,
       error: null,
       errorMsg: null,
       editorSettings: {
         modules: {
-          imageResize: {},
+          imageDrop: true,
+          imageResize: true,
         },
       },
     };
+  },
+  methods: {
+    fileChange() {
+      this.file = this.$refs.blogPhoto.files[0];
+      const fileName = this.file.name;
+      this.$store.commit("fileNameChange", fileName);
+      this.$store.commit("createFileURL", URL.createObjectURL(this.file));
+    },
+    openPreview() {
+      this.$store.commit("openPhotoPreview");
+    },
+    imageHandler(file, Editor, cursorLocation, resetUploader) {
+      const storageRef = firebase.storage.ref();
+      const docRef = storageRef.child(`documents/blogPostPhotos/${file.name}`);
+      console.log("docRef:", docRef);
+
+      docRef.put(file).on(
+        "state_changed",
+        (snapshot) => {
+          console.log("Upload Snapshot:", snapshot);
+        },
+        (err) => {
+          console.error("Upload Error:", err);
+        },
+        async () => {
+          const downloadURL = await docRef.getDownloadURL();
+          console.log("Download URL:", downloadURL);
+          Editor.insertEmbed(cursorLocation, "image", downloadURL);
+          resetUploader();
+        }
+
+      );
+    },
   },
   computed: {
     profileId() {

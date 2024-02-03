@@ -11,7 +11,7 @@ export default createStore({
       { blogTitle: "Dubai Holiday", blogCoverPhoto: "dubai-holiday", blogDate: "Dec 24, 2023" },
       { blogTitle: "Norway Holiday", blogCoverPhoto: "norway-holiday", blogDate: "Ian 4, 2024" }
     ],
-    blogHTML: "Write your blog title here...",
+    blogHTML: "orice scrie",
     blogTitle: "",
     blogPhotoName: "",
     blogPhotoFileURL: null,
@@ -33,6 +33,16 @@ export default createStore({
     },
     updateBlogTitle(state, payload) {
       state.blogTitle = payload;
+      console.log(state.blogTitle);
+    },
+    fileNameChange(state, payload) {
+      state.blogPhotoName = payload;
+    },
+    createFileURL(state, payload) {
+      state.blogPhotoFileURL = payload;
+    },
+    openPhotoPreview(state) {
+      state.blogPhotoPreview = !state.blogPhotoPreview;
     },
     toggleEditPost(state, payload) {
       state.editPost = payload;

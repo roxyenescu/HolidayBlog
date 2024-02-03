@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, serverTimestamp } from 'firebase/firestore';
 import { getFunctions } from 'firebase/functions';
+import { getStorage } from 'firebase/storage';
 
 // My web app's Firebase configuration
 const firebaseConfig = {
@@ -21,5 +22,8 @@ const db = getFirestore(app);
 // Initializarea Functions
 const functions = getFunctions(app);
 
+const storage = getStorage(app); // Adăugare serviciu Storage
+
 export { functions, serverTimestamp };
+export {storage};
 export default db;
