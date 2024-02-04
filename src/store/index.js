@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, updateDoc, getDoc, collection, query, orderBy, getDocs } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, getDoc, collection, query, orderBy, getDocs, deleteDoc } from 'firebase/firestore';
 import db from '../firebase/firebaseInit';
 
 export default createStore({
@@ -61,6 +61,9 @@ export default createStore({
     toggleEditPost(state, payload) {
       state.editPost = payload;
       console.log(state.editPost);
+    },
+    filterBlogPost(state, payload) {
+      state.blogPosts = state.blogPosts.filter(post => post.blogID !== payload);
     },
     updateUser(state, payload) {
       state.user = payload;
@@ -159,6 +162,24 @@ export default createStore({
        
       } catch (error) {
         console.error('Error fetching posts:', error);
+      }
+    },
+    async deletePost({ commit }, payload) {
+      const postRef = doc(db, 'blogPosts', payload);
+  
+      try {
+        // Get the document to check if it exists
+        const postDoc = await getDoc(postRef);
+  
+        if (postDoc.exists()) {
+          // Document exists, proceed with deletion
+          await deleteDoc(postRef);
+          commit("filterBlogPost", payload);
+        } else {
+          console.error('Document does not exist.');
+        }
+      } catch (error) {
+        console.error('Error deleting post:', error);
       }
     },
   },

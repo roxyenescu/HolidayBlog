@@ -1,10 +1,8 @@
 <template>
+    <delete-confirmation-modal v-if="showModal" @confirm="confirmDelete" @cancel="cancelDelete" />
     <div class="blog-card">
         <div v-show="editPost" class="icons">
-            <div class="icon">
-                <img :src="Edit" class="edit" />
-            </div>
-            <div class="icon">
+            <div @click="showDeleteConfirmation" class="icon">
                 <img :src="Delete" class="delete" />
             </div>
         </div>
@@ -23,8 +21,9 @@
 
 <script>
 import Arrow from "../assets/Icons/arrow-right-light.svg";
-import Edit from "../assets/Icons/edit-regular.svg";
 import Delete from "../assets/Icons/trash-regular.svg";
+import DeleteConfirmationModal from "../components/DeleteConfirmation.vue"; // Import the new component
+
 
 export default {
     name: "blogCard",
@@ -32,14 +31,33 @@ export default {
     data() {
         return {
             Arrow: Arrow,
-            Edit: Edit,
-            Delete: Delete
+            Delete: Delete,
+            showModal: false,
         }
+    },
+    components: {
+        DeleteConfirmationModal,
     },
     computed: {
         editPost() {
             return this.$store.state.editPost;
         }
+    },
+    methods: {
+        showDeleteConfirmation() {
+            this.showModal = true;
+        },
+        confirmDelete() {
+            this.$store.dispatch("deletePost", this.post.blogID);
+
+            this.showModal = false;
+        },
+        cancelDelete() {
+            this.showModal = false;
+        },
+        // deletePost() {
+        //     this.$store.dispatch("deletePost", this.post.blogID);
+        // }
     }
 };
 </script>
