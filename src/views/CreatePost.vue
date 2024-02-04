@@ -1,6 +1,7 @@
 <template>
   <div class="create-post">
     <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview" />
+    <Loading v-show="loading" />
     <div class="container">
       <div :class="{ invisible: !error }" class="err-message">
         <p><span>Error: </span>{{ this.errorMsg }}</p>
@@ -19,18 +20,14 @@
 
       <div class="editor-container">
         <div class="editor-settings">
-
-          <label class="uploadLabel" for="blog-photo-in">
-            <img :src="uploadPhoto" class="icon" @click="openImageUploader" />
-          </label>
-
           <img :src="bold" @click="applyBold" class="icon" />
           <img :src="italic" @click="applyItalic" class="icon" />
           <img :src="underline" @click="applyUnderline" class="icon" />
         </div>
 
         <div class="editor-frame">
-          <textarea id="blog-text" v-model="blogHTML" @added-image="imageHandler"></textarea>
+          <textarea id="blog-text" placeholder="Enter Blog Text Here..." v-model="blogHTML"
+            @added-image="imageHandler"></textarea>
         </div>
 
         <div class="card">
@@ -51,12 +48,12 @@
               <img :src="image.url" />
             </div>
           </div>
-          <button type="button">Upload</button>
+          <button type="button" @click="uploadPhotos">Upload in blog</button>
         </div>
       </div>
 
       <div class="blog-actions">
-        <button @click="saveBlog">Publish Blog</button>
+        <button @click="uploadBlog">Publish Blog</button>
         <router-link class="router-button" :to="{ name: 'BlogPreview' }">Post Preview</router-link>
       </div>
     </div>
@@ -64,15 +61,16 @@
 </template>
 
 <script>
-import firebase from "firebase/app";
-import "firebase/storage";
+import { storage } from "../firebase/firebaseInit";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+//import firebase from "firebase/app";
+import { collection, getFirestore, doc, setDoc } from 'firebase/firestore';
 
 import BlogCoverPreview from '../components/BlogCoverPreview.vue';
+import Loading from '../components/Loading.vue';
 import bold from '../assets/Icons/text-bold-svgrepo-com.svg';
 import italic from '../assets/Icons/text-italic-svgrepo-com.svg';
 import underline from '../assets/Icons/text-underline-svgrepo-com.svg';
-import uploadPhoto from '../assets/Icons/frame-4-svgrepo-com.svg';
-
 
 export default {
   name: "CreatePost",
@@ -81,11 +79,11 @@ export default {
       bold,
       italic,
       underline,
-      uploadPhoto,
     }
   },
   components: {
     BlogCoverPreview,
+    Loading
   },
   data() {
     return {
@@ -94,9 +92,24 @@ export default {
       errorMsg: null,
       images: [],
       isDragging: false,
+      loading: null,
     };
   },
   methods: {
+    uploadPhotos() {
+      // Parcurg lista de imagini și încarc fiecare în storage
+      this.images.forEach((image, index) => {
+        const storageRef = ref(storage, `blogPostPhotos/${image.name}`);
+        uploadBytes(storageRef, this.$refs.fileInput.files[index]).then(
+          (snapshot) => {
+            console.log(`Image ${index + 1} uploaded`, snapshot);
+
+            // Actualizez variabila "images" în starea Vuex
+            this.$store.dispatch('updateImagesAction', this.images);
+          }
+        );
+      });
+    },
     selectFiles() {
       this.$refs.fileInput.click();
     },
@@ -142,27 +155,62 @@ export default {
     openPreview() {
       this.$store.commit("openPhotoPreview");
     },
-    imageHandler(file, Editor, cursorLocation, resetUploader) {
-      const storageRef = firebase.storage.ref();
-      const docRef = storageRef.child(`documents/blogPostPhotos/${file.name}`);
-      console.log("docRef:", docRef);
+    async uploadBlog() {
+      if (this.blogTitle.length !== 0 && this.blogHTML !== 0) {
+        if (this.file) {
+          this.loading = true; 
 
-      docRef.put(file).on(
-        "state_changed",
-        (snapshot) => {
-          console.log("Upload Snapshot:", snapshot);
-        },
-        (err) => {
-          console.error("Upload Error:", err);
-        },
-        async () => {
-          const downloadURL = await docRef.getDownloadURL();
-          console.log("Download URL:", downloadURL);
-          Editor.insertEmbed(cursorLocation, "image", downloadURL);
-          resetUploader();
+          const storage = getStorage();
+          const storageRef = ref(storage, `documents/BlogCoverPhotos/${this.$store.state.blogPhotoName}`);
+
+          try {
+            // Upload cover photo to storage
+            await uploadBytes(storageRef, this.file);
+
+            // Get download URL of the uploaded cover photo
+            const downloadURL = await getDownloadURL(storageRef);
+            const timestamp = Date.now();
+
+            // Get Firestore instance
+            const firestore = getFirestore();
+
+            // Create a reference to the "blogPosts" collection
+            const newCollectionRef = collection(firestore, 'blogPosts');
+
+            // Create a reference to a new document with an auto-generated ID
+            const newDocRef = doc(newCollectionRef);
+
+            await setDoc(newDocRef, {
+              blogID: newDocRef.id,
+              blogHTML: this.blogHTML,
+              blogCoverPhoto: downloadURL,
+              blogCoverPhotoName: this.blogCoverPhotoName,
+              blogTitle: this.blogTitle,
+              profileId: this.profileId,
+              date: timestamp,
+              images: this.images.map(image => ({ name: image.name, url: image.url })),
+            });
+
+            this.loading = false;
+            this.$router.push({ name: "ViewBlog" });
+          } catch (error) {
+            console.error(error);
+            this.loading = false;
+          }
+        } else {
+          this.error = true;
+          this.errorMsg = "Please ensure you uploaded a cover photo!";
+          setTimeout(() => {
+            this.error = false;
+          }, 5000);
         }
-
-      );
+      } else {
+        this.error = true;
+        this.errorMsg = "Please ensure Blog Title and Blog Post have been filled!";
+        setTimeout(() => {
+          this.error = false;
+        }, 5000);
+      }
     },
   },
   computed: {
@@ -322,7 +370,7 @@ export default {
     }
 
     .editor-frame {
-      height: 100%;
+      height: 90%;
       padding: 5px;
       width: 100%;
       margin-top: 16px;
@@ -360,13 +408,12 @@ export default {
         border-radius: 4px;
         font-weight: 400;
         padding: 8px 13px;
-        width: 100%;
         background: red;
         width: 30%;
       }
 
       .drag-area {
-        height: 50%;
+        height: 20%;
         border-radius: 5px;
         border: 2px dashed red;
         background: #fff;

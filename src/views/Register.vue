@@ -73,7 +73,7 @@ export default {
     },
     methods: {
         async register() {
-            if (this.email !== "" && 
+            if (this.email !== "" &&
                 this.password !== "" &&
                 this.firstName !== "" &&
                 this.lastName !== "" &&

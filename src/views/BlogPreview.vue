@@ -4,6 +4,9 @@
             <h2>{{ this.blogTitle }}</h2>
             <img :src="blogCoverPhoto" alt="" />
             <div class="post-content ql-editor" v-html="blogHTML"></div>
+            <div class="card-images">
+                <img v-for="(image, index) in images" :src="image.url" :key="index" />
+            </div>
         </div>
     </div>
 </template>
@@ -19,6 +22,9 @@ export default {
         },
         blogCoverPhoto() {
             return this.$store.state.blogPhotoFileURL;
+        },
+        images() {
+            return this.$store.state.images;
         },
     }
 }
@@ -41,6 +47,23 @@ export default {
     img {
         width: 100%;
         margin-bottom: 32px;
+    }
+
+    .ql-editor {
+        white-space: pre-wrap; // Păstrează spațiile și trecerea la linie
+        margin-bottom: 32px;
+    }
+
+    .card-images {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px; // Spațiu între imagini
+        justify-content: flex-start;
+
+        img {
+            width: calc(25% - 10px); // Aproximativ 25% pentru afisarea a 4 imagini pe rând
+            margin-bottom: 10px;
+        }
     }
 }
 </style>

@@ -11,7 +11,10 @@ export default createStore({
       { blogTitle: "Dubai Holiday", blogCoverPhoto: "dubai-holiday", blogDate: "Dec 24, 2023" },
       { blogTitle: "Norway Holiday", blogCoverPhoto: "norway-holiday", blogDate: "Ian 4, 2024" }
     ],
-    blogHTML: "orice scrie",
+    blogPosts: [],
+    postLoaded: null,
+    blogHTML: "",
+    images: [],
     blogTitle: "",
     blogPhotoName: "",
     blogPhotoFileURL: null,
@@ -27,6 +30,9 @@ export default createStore({
     profileInitials: null,
   },
   mutations: {
+    updateImages(state, payload) {
+      state.images = payload;
+    },
     newBlogPost(state, payload) {
       state.blogHTML = payload;
       console.log(state.blogHTML);
@@ -116,6 +122,10 @@ export default createStore({
         console.error("Eroare la actualizarea setărilor utilizatorului:", error);
       }
     },
+    updateImagesAction({ commit }, payload) {
+      commit('updateImages', payload);
+    },
+    
   },
   modules: {
   }

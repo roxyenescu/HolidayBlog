@@ -19,11 +19,11 @@ const app = initializeApp(firebaseConfig);
 // Inițializarea serviciului Firestore
 const db = getFirestore(app);
 
-// Initializarea Functions
+// Initializarea serviciului Functions
 const functions = getFunctions(app);
 
-const storage = getStorage(app); // Adăugare serviciu Storage
+// Initializarea serviciului Storage
+const storage = getStorage(app);
 
-export { functions, serverTimestamp };
-export {storage};
+export { functions, serverTimestamp, storage };
 export default db;
