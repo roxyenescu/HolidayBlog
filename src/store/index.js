@@ -1,16 +1,10 @@
 import { createStore } from 'vuex';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, updateDoc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, getDoc, collection, query, orderBy, getDocs } from 'firebase/firestore';
 import db from '../firebase/firebaseInit';
 
 export default createStore({
   state: {
-    sampleBlogCards: [
-      { blogTitle: "Venice Holiday", blogCoverPhoto: "venice-holiday", blogDate: "Sep 25, 2023" },
-      { blogTitle: "London Holiday", blogCoverPhoto: "london-holiday", blogDate: "Nov 6, 2023" },
-      { blogTitle: "Dubai Holiday", blogCoverPhoto: "dubai-holiday", blogDate: "Dec 24, 2023" },
-      { blogTitle: "Norway Holiday", blogCoverPhoto: "norway-holiday", blogDate: "Ian 4, 2024" }
-    ],
     blogPosts: [],
     postLoaded: null,
     blogHTML: "",
@@ -29,7 +23,21 @@ export default createStore({
     profileId: null,
     profileInitials: null,
   },
+  getters: {
+    blogPostsFeed(state) {
+      return state.blogPosts.slice(0, 2);
+    },
+    blogPostsCards(state) {
+      return state.blogPosts.slice(2, 6);
+    }
+  },
   mutations: {
+    setPosts(state, postData) {
+      state.blogPosts.push(postData);
+    },
+    setPostLoaded(state, loaded) {
+      state.postLoaded = loaded;
+    },
     updateImages(state, payload) {
       state.images = payload;
     },
@@ -125,7 +133,34 @@ export default createStore({
     updateImagesAction({ commit }, payload) {
       commit('updateImages', payload);
     },
-    
+    async getPost({ commit, state }) {
+      const q = query(collection(db, 'blogPosts'), orderBy('date', 'desc'));
+      
+      try {
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (!state.blogPosts.some(post => post.blogID === doc.id)) {
+            const postData = {
+              blogID: doc.id,
+              blogHTML: data.blogHTML,
+              blogCoverPhoto: data.blogCoverPhoto,
+              blogTitle: data.blogTitle,
+              blogDate: data.date,
+              images: data.images || [],
+            };
+            commit('setPosts', postData);
+            console.log(postData);
+          }
+        });
+
+        commit('setPostLoaded', true);
+       
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    },
   },
   modules: {
   }

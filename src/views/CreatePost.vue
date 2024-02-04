@@ -19,11 +19,6 @@
       </div>
 
       <div class="editor-container">
-        <div class="editor-settings">
-          <img :src="bold" @click="applyBold" class="icon" />
-          <img :src="italic" @click="applyItalic" class="icon" />
-          <img :src="underline" @click="applyUnderline" class="icon" />
-        </div>
 
         <div class="editor-frame">
           <textarea id="blog-text" placeholder="Enter Blog Text Here..." v-model="blogHTML"
@@ -54,7 +49,7 @@
 
       <div class="blog-actions">
         <button @click="uploadBlog">Publish Blog</button>
-        <router-link class="router-button" :to="{ name: 'BlogPreview' }">Post Preview</router-link>
+        <!-- <router-link class="router-button" :to="{ name: 'BlogPreview' }">Post Preview</router-link> -->
       </div>
     </div>
   </div>
@@ -63,24 +58,13 @@
 <script>
 import { storage } from "../firebase/firebaseInit";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-//import firebase from "firebase/app";
 import { collection, getFirestore, doc, setDoc } from 'firebase/firestore';
 
 import BlogCoverPreview from '../components/BlogCoverPreview.vue';
 import Loading from '../components/Loading.vue';
-import bold from '../assets/Icons/text-bold-svgrepo-com.svg';
-import italic from '../assets/Icons/text-italic-svgrepo-com.svg';
-import underline from '../assets/Icons/text-underline-svgrepo-com.svg';
 
 export default {
   name: "CreatePost",
-  setup() {
-    return {
-      bold,
-      italic,
-      underline,
-    }
-  },
   components: {
     BlogCoverPreview,
     Loading
@@ -99,7 +83,7 @@ export default {
     uploadPhotos() {
       // Parcurg lista de imagini și încarc fiecare în storage
       this.images.forEach((image, index) => {
-        const storageRef = ref(storage, `blogPostPhotos/${image.name}`);
+        const storageRef = ref(storage, `documents/BlogPostPhotos/${image.name}`);
         uploadBytes(storageRef, this.$refs.fileInput.files[index]).then(
           (snapshot) => {
             console.log(`Image ${index + 1} uploaded`, snapshot);
@@ -353,21 +337,6 @@ export default {
     align-items: center;
     justify-content: center;
     height: 100vh;
-
-    .editor-settings {
-      flex: 1;
-      margin-left: 16px;
-      position: relative;
-      display: flex;
-
-      .icon {
-        width: 40px;
-        height: auto;
-        cursor: pointer;
-        font-size: 24px;
-        margin-left: 10px;
-      }
-    }
 
     .editor-frame {
       height: 90%;

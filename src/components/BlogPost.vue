@@ -1,22 +1,23 @@
 <template>
-    <div class="blog-wrapper" :class="{'no-user' : !user}">
+    <div class="blog-wrapper" :class="{ 'no-user': !user }">
         <div class="blog-content">
             <div>
                 <h2 v-if="post.welcomeScreen">{{ post.title }}</h2>
-                <h2 v-else>{{ post.title }}</h2>
+                <h2 v-else>{{ post.blogTitle }}</h2>
 
                 <p v-if="post.welcomeScreen">{{ post.blogPost }}</p>
-                <p class="content-preview" v-else>{{ post.blogPostHTML }}</p>
+                <!-- <p class="content-preview" v-else v-html="post.blogHTML"></p> -->
 
                 <router-link class="link link-light" v-if="post.welcomeScreen" to="#">
                     Login/Register<img :src="Arrow" class="arrow arrow-light" />
                 </router-link>
-                <router-link class="link" v-else to="#">View The Post<img :src="Arrow" class="arrow" /></router-link>
+                <router-link class="link" v-else :to="{ name: 'ViewBlogPost', params: { blogid: this.post.blogID } }">
+                    View The Post<img :src="Arrow" class="arrow" /></router-link>
             </div>
         </div>
         <div class="blog-photo">
             <img v-if="post.welcomeScreen" :src="require(`../assets/blogPhotos/${post.photo}.jpg`)" alt="">
-            <img v-else :src="require(`../assets/blogPhotos/${post.blogCoverPhoto}.jpg`)" alt="">
+            <img v-else :src="post.blogCoverPhoto" alt="">
         </div>
     </div>
 </template>
@@ -149,7 +150,7 @@ export default {
 .no-user:first-child {
     .blog-content {
         background-color: #303030;
-        color:#fff;
+        color: #fff;
     }
 }
 </style>

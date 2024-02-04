@@ -9,11 +9,11 @@
             </div>
         </div>
 
-        <img :src="require(`../assets/blogCards/${post.blogCoverPhoto}.jpg`)" alt="" class="image" />
+        <img :src="post.blogCoverPhoto" alt="" class="image" />
         <div class="info">
             <h4>{{ post.blogTitle }}</h4>
-            <h6>Posted on: {{ post.blogDate }}</h6>
-            <router-link class="link" to="#">
+            <h6>Posted on: {{ new Date(post.blogDate).toLocaleString("en-us", { dateStyle: "long" }) }}</h6>
+            <router-link class="link" :to="{ name: 'ViewBlogPost', params: { blogid: this.post.blogID } }">
                 View The Post
                 <img :src="Arrow" class="arrow" />
             </router-link>
